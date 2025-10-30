@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌿 생태 & 환경 퀴즈</title>
+    <style>
+        /* CSS 스타일 시작 */
+        :root {
+            --primary-color: #28a745; /* 녹색 계열 */
+            --secondary-color: #007bff; /* 파란색 계열 */
+            --background-color: #f4f7f6;
+            --card-background: #ffffff;
+            --text-color: #333;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .quiz-container {
+            background-color: var(--card-background);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 600px;
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+
+        /* 퀴즈 진행 섹션 */
+        #quiz-section {
+            display: block;
+        }
+
+        .question-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            width: 0%;
+            background-color: var(--secondary-color);
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .question-text {
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .options-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 20px 0;
+        }
+
+        .option-item {
+            margin-bottom: 10px;
+        }
+
+        .option-button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            text-align: left;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            background-color: var(--card-background);
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s, transform 0.1s;
+        }
+
+        .option-button:hover:not(:disabled) {
+            background-color: #e9f0ff;
+            border-color: var(--secondary-color);
+        }
+
+        .option-button:disabled {
+            cursor: not-allowed;
+        }
+
+        /* 정답/오답 피드백 */
+        .option-button.correct {
+            background-color: #d4edda;
+            border-color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .option-button.incorrect {
+            background-color: #f8d7da;
+            border-color: #dc3545;
+        }
+
+        /* 버튼 스타일 */
+        .button-group {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.2s, opacity 0.2s;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: #1e7e34;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* 결과 섹션 */
+        #result-section {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+
+        #score-display {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .result-message {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+        }
+
+        .btn-restart {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-restart:hover {
+            background-color: #0056b3;
+        }
+
+        /* 미디어 쿼리 (모바일 최적화) */
+        @media (max-width: 650px) {
+            body {
+                padding: 10px;
+            }
+            .quiz-container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+            .question-text {
+                font-size: 1.2rem;
+            }
+            .option-button {
+                font-size: 1rem;
+                padding: 12px;
+            }
+            .btn {
+                padding: 10px 20px;
+                font-size: 1rem;
+            }
+        }
+        /* CSS 스타일 끝 */
+    </style>
+</head>
+<body>
+
+    <div class="quiz-container">
+        <h1>🌿 생태와 환경 퀴즈</h1>
+
+        <div id="quiz-section">
+            <div class="question-info">
+                <span>질문 <span id="current-question-number">1</span> / 10</span>
+                <span id="score">점수: 0</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress" id="progress-indicator"></div>
+            </div>
+
+            <p class="question-text" id="question-text"></p>
+
+            <ul class="options-list" id="options-list">
+                </ul>
+
+            <div class="button-group">
+                <button class="btn btn-primary" id="next-button" disabled>다음</button>
+            </div>
+        </div>
+        
+        <div id="result-section">
+            <h2>🎉 퀴즈 완료!</h2>
+            <p class="result-message">당신의 점수는:</p>
+            <p id="score-display">0/10</p>
+            <button class="btn btn-restart" id="restart-button">다시 시작</button>
+        </div>
+
+    </div>
+
+    <script>
+        // JavaScript 스크립트 시작
+        const quizData = [
+            {
+                question: "생물과 비생물적 환경 요인이 상호작용하는 시스템을 무엇이라고 부르나요?",
+                options: ["개체군", "군집", "생태계", "생물권"],
+                answer: "생태계"
+            },
+            {
+                question: "대기 중 이산화탄소를 흡수하고 산소를 방출하여 지구의 '허파' 역할을 하는 곳은?",
+                options: ["사막", "툰드라", "열대 우림", "초원"],
+                answer: "열대 우림"
+            },
+            {
+                question: "재사용, 재활용과 함께 환경 보호의 기본 원칙인 '3R' 중 가장 우선되는 행동은 무엇인가요?",
+                options: ["Reduce (줄이기)", "Reuse (재사용)", "Recycle (재활용)", "Repair (수리)"],
+                answer: "Reduce (줄이기)"
+            },
+            {
+                question: "지구 온난화의 주범으로 꼽히는 온실 가스 중 가장 큰 비중을 차지하는 것은?",
+                options: ["메탄 (CH4)", "이산화질소 (N2O)", "수증기 (H2O)", "이산화탄소 (CO2)"],
+                answer: "이산화탄소 (CO2)"
+            },
+            {
+                question: "하나의 서식지에 살고 있는 다양한 생물 종의 다양성을 나타내는 용어는?",
+                options: ["생산성", "천이", "생물 다양성", "먹이 사슬"],
+                answer: "생물 다양성"
+            },
+            {
+                question: "강이나 호수의 영양분이 과도하게 증가하여 녹조 현상 등을 유발하는 현상은?",
+                options: ["산성화", "부영양화", "토양 침식", "사막화"],
+                answer: "부영양화"
+            },
+            {
+                question: "인간 활동으로 인해 발생한 환경 문제를 원래 상태로 되돌리려는 노력을 무엇이라고 하나요?",
+                options: ["환경 복원", "환경 감시", "환경 정화", "환경 개발"],
+                answer: "환경 복원"
+            },
+            {
+                question: "태양 에너지로부터 직접 유기물을 합성하여 먹이 사슬의 기초를 이루는 생물을 무엇이라고 부르나요?",
+                options: ["소비자", "분해자", "생산자", "일차 소비자"],
+                answer: "생산자"
+            },
+            {
+                question: "쓰레기 매립지나 축산 폐기물 등에서 주로 발생하는 강력한 온실 가스는?",
+                options: ["오존", "염화불화탄소 (CFC)", "메탄", "아산화질소"],
+                answer: "메탄"
+            },
+            {
+                question: "'멸종 위기에 처한 야생 동식물종의 국제 거래에 관한 협약'을 줄여서 부르는 명칭은?",
+                options: ["람사르 협약", "몬트리올 의정서", "CITES", "교토 의정서"],
+                answer: "CITES"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let quizCompleted = false;
+
+        const quizSection = document.getElementById('quiz-section');
+        const resultSection = document.getElementById('result-section');
+        const questionText = document.getElementById('question-text');
+        const optionsList = document.getElementById('options-list');
+        const nextButton = document.getElementById('next-button');
+        const restartButton = document.getElementById('restart-button');
+        const scoreDisplay = document.getElementById('score-display');
+        const currentQuestionNumber = document.getElementById('current-question-number');
+        const scoreElement = document.getElementById('score');
+        const progressIndicator = document.getElementById('progress-indicator');
+
+        // 퀴즈 시작 및 재시작 함수
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            quizCompleted = false;
+            quizSection.style.display = 'block';
+            resultSection.style.display = 'none';
+            scoreElement.textContent = '점수: 0';
+            loadQuestion();
+        }
+
+        // 질문 로드 및 표시 함수
+        function loadQuestion() {
+            if (currentQuestionIndex >= quizData.length) {
+                showResult();
+                return;
+            }
+
+            const currentQuiz = quizData[currentQuestionIndex];
+
+            // UI 업데이트
+            currentQuestionNumber.textContent = currentQuestionIndex + 1;
+            questionText.textContent = currentQuiz.question;
+            optionsList.innerHTML = '';
+            nextButton.disabled = true;
+            nextButton.textContent = '다음';
+
+            // 진행률 업데이트
+            const progressPercent = ((currentQuestionIndex) / quizData.length) * 100;
+            progressIndicator.style.width = `${progressPercent}%`;
+
+            // 옵션 버튼 생성
+            currentQuiz.options.forEach(option => {
+                const listItem = document.createElement('li');
+                listItem.className = 'option-item';
+                
+                const button = document.createElement('button');
+                button.className = 'option-button';
+                button.textContent = option;
+                button.addEventListener('click', () => selectAnswer(button, option, currentQuiz.answer));
+
+                listItem.appendChild(button);
+                optionsList.appendChild(listItem);
+            });
+        }
+
+        // 정답 선택 처리 함수
+        function selectAnswer(selectedButton, selectedOption, correctAnswer) {
+            if (quizCompleted) return;
+
+            const allButtons = optionsList.querySelectorAll('.option-button');
+            allButtons.forEach(btn => btn.disabled = true); // 다른 버튼 비활성화
+
+            let isCorrect = selectedOption === correctAnswer;
+
+            if (isCorrect) {
+                selectedButton.classList.add('correct');
+                score++;
+                scoreElement.textContent = `점수: ${score}`;
+            } else {
+                selectedButton.classList.add('incorrect');
+                // 정답 표시
+                allButtons.forEach(btn => {
+                    if (btn.textContent === correctAnswer) {
+                        btn.classList.add('correct');
+                    }
+                });
+            }
+
+            nextButton.disabled = false;
+        }
+
+        // 다음 질문으로 이동
+        function nextQuestion() {
+            currentQuestionIndex++;
+            loadQuestion();
+        }
+
+        // 결과 화면 표시
+        function showResult() {
+            quizCompleted = true;
+            quizSection.style.display = 'none';
+            resultSection.style.display = 'block';
+            scoreDisplay.textContent = `${score} / ${quizData.length}`;
+            progressIndicator.style.width = '100%'; // 마지막 질문까지 완료 표시
+        }
+
+        // 이벤트 리스너
+        nextButton.addEventListener('click', nextQuestion);
+        restartButton.addEventListener('click', startQuiz);
+
+        // 초기 시작
+        startQuiz();
+        // JavaScript 스크립트 끝
+    </script>
+
+</body>
+</html>
